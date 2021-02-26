@@ -58,7 +58,7 @@ import math
 import os.path
 import sys
 
-from configloader import ConfigLoader
+from deeplab.configloader import ConfigLoader
 from deeplab.datasets import build_data
 from six.moves import range
 import tensorflow as tf
@@ -127,7 +127,7 @@ class Datasetbuilder(ConfigLoader):
 
         for shard_id in range(_NUM_SHARDS):
             output_filename = os.path.join(
-                FLAGS.output_dir,
+                self.output_dir,
                 '%s-%05d-of-%05d.tfrecord' % (dataset, shard_id, _NUM_SHARDS))
             with tf.python_io.TFRecordWriter(output_filename) as tfrecord_writer:
                 start_idx = shard_id * num_per_shard
@@ -138,13 +138,13 @@ class Datasetbuilder(ConfigLoader):
                     sys.stdout.flush()
                     # Read the image.
                     image_filename = os.path.join(
-                        FLAGS.image_folder, filenames[i] + '.' + FLAGS.image_format)
+                        self.image_folder, filenames[i] + '.' + self.image_format)
                     image_data = tf.gfile.GFile(image_filename, 'rb').read()
                     height, width = image_reader.read_image_dims(image_data)
                     # Read the semantic segmentation annotation.
                     seg_filename = os.path.join(
-                        FLAGS.semantic_segmentation_folder,
-                        filenames[i] + '.' + FLAGS.label_format)
+                        self.semantic_segmentation_folder,
+                        filenames[i] + '.' + self.label_format)
                     seg_data = tf.gfile.GFile(seg_filename, 'rb').read()
                     seg_height, seg_width = label_reader.read_image_dims(seg_data)
                     if height != seg_height or width != seg_width:

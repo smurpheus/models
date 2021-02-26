@@ -7,7 +7,10 @@ class ConfigLoader(object):
     def __init__(self, config_path=None):
         configs = self.load_config(config_path)
         for key, value in configs.items():
-            setattr(self, key, value)
+            if type(value) == tuple:
+              setattr(self, key, value[0])
+            else:
+              setattr(self, key, value)
 
     def load_config(self, config_path=None):
         if config_path and os.path.isfile(config_path):

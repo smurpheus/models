@@ -35,7 +35,7 @@ import tensorflow as tf
 
 FLAGS = tf.app.flags.FLAGS
 default_configs = [
-    {'type': 'enum', 'name': 'image_format', 'value': ('png', ['jpg', 'jpeg', 'png']), 'description': 'Image format.'},
+    {'type': 'enum', 'name': 'image_format', 'value': ('jpg', ['jpg', 'jpeg', 'png']), 'description': 'Image format.'},
     {'type': 'enum', 'name': 'label_format', 'value': ('png', ['png']), 'description': 'Segmentation label format.'}]
 configs = {entry['name']: entry['value'] for entry in default_configs}
 
@@ -168,16 +168,24 @@ def image_seg_to_tfexample(image_data, filename, height, width, seg_data):
     Returns:
       tf example of one image/segmentation pair.
     """
+    
+    configdict = {}
+    for each in default_configs:
+      if each['type'] == "enum":
+        configdict[each['name']] = each['value'][0]
+      else:
+        configdict[each['name']] = each['value']
+    print(configdict)
     return tf.train.Example(features=tf.train.Features(feature={
         'image/encoded': _bytes_list_feature(image_data),
         'image/filename': _bytes_list_feature(filename),
         'image/format': _bytes_list_feature(
-            _IMAGE_FORMAT_MAP[FLAGS.image_format]),
+            _IMAGE_FORMAT_MAP[configdict['image_format']]),
         'image/height': _int64_list_feature(height),
         'image/width': _int64_list_feature(width),
         'image/channels': _int64_list_feature(3),
         'image/segmentation/class/encoded': (
             _bytes_list_feature(seg_data)),
         'image/segmentation/class/format': _bytes_list_feature(
-            FLAGS.label_format),
+            configdict['label_format']),
     }))
