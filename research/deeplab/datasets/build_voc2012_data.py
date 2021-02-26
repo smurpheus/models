@@ -57,90 +57,115 @@ from __future__ import print_function
 import math
 import os.path
 import sys
-import build_data
+
+from configloader import ConfigLoader
+from deeplab.datasets import build_data
 from six.moves import range
 import tensorflow as tf
 
 FLAGS = tf.app.flags.FLAGS
+default_configs = [{'type': 'string', 'name': 'image_folder', 'value': './VOCdevkit/VOC2012/JPEGImages',
+                    'description': 'Folder containing images.'},
+                   {'type': 'string', 'name': 'semantic_segmentation_folder',
+                    'value': './VOCdevkit/VOC2012/SegmentationClassRaw',
+                    'description': 'Folder containing semantic segmentation annotations.'},
+                   {'type': 'string', 'name': 'list_folder', 'value': './VOCdevkit/VOC2012/ImageSets/Segmentation',
+                    'description': 'Folder containing lists for training and validation'},
+                   {'type': 'string', 'name': 'output_dir', 'value': './tfrecord',
+                    'description': 'Path to save converted SSTable of TensorFlow examples.'}]
+configs = {entry['name']: entry['value'] for entry in default_configs}
 
-tf.app.flags.DEFINE_string('image_folder',
-                           './VOCdevkit/VOC2012/JPEGImages',
-                           'Folder containing images.')
 
-tf.app.flags.DEFINE_string(
-    'semantic_segmentation_folder',
-    './VOCdevkit/VOC2012/SegmentationClassRaw',
-    'Folder containing semantic segmentation annotations.')
+def handle_type(entry):
+    etype = entry['type']
+    name = entry['name']
+    value = entry['value']
+    desc = entry['description']
+    if etype == "float":
+        tf.app.flags.DEFINE_float(name, value, desc)
+    if etype == "boolean":
+        tf.app.flags.DEFINE_boolean(name, value, desc)
+    if etype == "multi_integer":
+        tf.app.flags.DEFINE_multi_integer(name, value, desc)
+    if etype == "string":
+        tf.app.flags.DEFINE_string(name, value, desc)
+    if etype == "enum":
+        tf.app.flags.DEFINE_enum(name, value[0], value[1], desc)
+    if etype == "list":
+        tf.app.flags.DEFINE_list(name, value, desc)
+    if etype == "integer":
+        tf.app.flags.DEFINE_integer(name, value, desc)
 
-tf.app.flags.DEFINE_string(
-    'list_folder',
-    './VOCdevkit/VOC2012/ImageSets/Segmentation',
-    'Folder containing lists for training and validation')
 
-tf.app.flags.DEFINE_string(
-    'output_dir',
-    './tfrecord',
-    'Path to save converted SSTable of TensorFlow examples.')
-
+for entry in default_configs:
+    handle_type(entry)
 
 _NUM_SHARDS = 4
 
 
-def _convert_dataset(dataset_split):
-  """Converts the specified dataset split to TFRecord format.
+class Datasetbuilder(ConfigLoader):
+    FLAGS = FLAGS
+    DEFAULT_FLAGS = configs
 
-  Args:
-    dataset_split: The dataset split (e.g., train, test).
+    def _convert_dataset(self, dataset_split):
+        """Converts the specified dataset split to TFRecord format.
 
-  Raises:
-    RuntimeError: If loaded image and label have different shape.
-  """
-  dataset = os.path.basename(dataset_split)[:-4]
-  sys.stdout.write('Processing ' + dataset)
-  filenames = [x.strip('\n') for x in open(dataset_split, 'r')]
-  num_images = len(filenames)
-  num_per_shard = int(math.ceil(num_images / _NUM_SHARDS))
+        Args:
+          dataset_split: The dataset split (e.g., train, test).
 
-  image_reader = build_data.ImageReader('jpeg', channels=3)
-  label_reader = build_data.ImageReader('png', channels=1)
+        Raises:
+          RuntimeError: If loaded image and label have different shape.
+        """
+        dataset = os.path.basename(dataset_split)[:-4]
+        sys.stdout.write('Processing ' + dataset)
+        filenames = [x.strip('\n') for x in open(dataset_split, 'r')]
+        num_images = len(filenames)
+        num_per_shard = int(math.ceil(num_images / _NUM_SHARDS))
 
-  for shard_id in range(_NUM_SHARDS):
-    output_filename = os.path.join(
-        FLAGS.output_dir,
-        '%s-%05d-of-%05d.tfrecord' % (dataset, shard_id, _NUM_SHARDS))
-    with tf.python_io.TFRecordWriter(output_filename) as tfrecord_writer:
-      start_idx = shard_id * num_per_shard
-      end_idx = min((shard_id + 1) * num_per_shard, num_images)
-      for i in range(start_idx, end_idx):
-        sys.stdout.write('\r>> Converting image %d/%d shard %d' % (
-            i + 1, len(filenames), shard_id))
-        sys.stdout.flush()
-        # Read the image.
-        image_filename = os.path.join(
-            FLAGS.image_folder, filenames[i] + '.' + FLAGS.image_format)
-        image_data = tf.gfile.GFile(image_filename, 'rb').read()
-        height, width = image_reader.read_image_dims(image_data)
-        # Read the semantic segmentation annotation.
-        seg_filename = os.path.join(
-            FLAGS.semantic_segmentation_folder,
-            filenames[i] + '.' + FLAGS.label_format)
-        seg_data = tf.gfile.GFile(seg_filename, 'rb').read()
-        seg_height, seg_width = label_reader.read_image_dims(seg_data)
-        if height != seg_height or width != seg_width:
-          raise RuntimeError('Shape mismatched between image and label.')
-        # Convert to tf example.
-        example = build_data.image_seg_to_tfexample(
-            image_data, filenames[i], height, width, seg_data)
-        tfrecord_writer.write(example.SerializeToString())
-    sys.stdout.write('\n')
-    sys.stdout.flush()
+        image_reader = build_data.ImageReader('jpeg', channels=3)
+        label_reader = build_data.ImageReader('png', channels=1)
+
+        for shard_id in range(_NUM_SHARDS):
+            output_filename = os.path.join(
+                FLAGS.output_dir,
+                '%s-%05d-of-%05d.tfrecord' % (dataset, shard_id, _NUM_SHARDS))
+            with tf.python_io.TFRecordWriter(output_filename) as tfrecord_writer:
+                start_idx = shard_id * num_per_shard
+                end_idx = min((shard_id + 1) * num_per_shard, num_images)
+                for i in range(start_idx, end_idx):
+                    sys.stdout.write('\r>> Converting image %d/%d shard %d' % (
+                        i + 1, len(filenames), shard_id))
+                    sys.stdout.flush()
+                    # Read the image.
+                    image_filename = os.path.join(
+                        FLAGS.image_folder, filenames[i] + '.' + FLAGS.image_format)
+                    image_data = tf.gfile.GFile(image_filename, 'rb').read()
+                    height, width = image_reader.read_image_dims(image_data)
+                    # Read the semantic segmentation annotation.
+                    seg_filename = os.path.join(
+                        FLAGS.semantic_segmentation_folder,
+                        filenames[i] + '.' + FLAGS.label_format)
+                    seg_data = tf.gfile.GFile(seg_filename, 'rb').read()
+                    seg_height, seg_width = label_reader.read_image_dims(seg_data)
+                    if height != seg_height or width != seg_width:
+                        raise RuntimeError('Shape mismatched between image and label.')
+                    # Convert to tf example.
+                    example = build_data.image_seg_to_tfexample(
+                        image_data, filenames[i], height, width, seg_data)
+                    tfrecord_writer.write(example.SerializeToString())
+            sys.stdout.write('\n')
+            sys.stdout.flush()
+
+    def build_dataset(self):
+        dataset_splits = tf.gfile.Glob(os.path.join(self.list_folder, '*.txt'))
+        for dataset_split in dataset_splits:
+            self._convert_dataset(dataset_split)
 
 
 def main(unused_argv):
-  dataset_splits = tf.gfile.Glob(os.path.join(FLAGS.list_folder, '*.txt'))
-  for dataset_split in dataset_splits:
-    _convert_dataset(dataset_split)
+    db = Datasetbuilder()
+    db.build_dataset()
 
 
 if __name__ == '__main__':
-  tf.app.run()
+    tf.app.run()
