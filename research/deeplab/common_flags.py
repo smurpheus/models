@@ -66,12 +66,13 @@ default_configs = [{'type': 'integer', 'name': 'min_resize_value', 'value': None
                    {'type': 'boolean', 'name': 'decoder_output_is_logits', 'value': False,
                     'description': 'Use decoder output as logits or not.'},
                    {'type': 'boolean', 'name': 'image_se_uses_qsigmoid', 'value': False,
-                    'description': 'Use q-sigmoid.'}, {'type': 'multi_float', 'name': 'label_weights', 'value': None,
-                                                       'description': 'A list of label weights, each element '
-                                                                      'represents the weight for the label of its '
-                                                                      'index, for example, label_weights = [0.1, 0.5] '
-                                                                      'means the weight for label 0 is 0.1 and the '
-                                                                      'weight for label 1 is 0.5. If set as None, all '
-                                                                      'the labels have the same weight 1.0.'},
-                   {'type': 'float', 'name': 'batch_norm_decay', 'value': 0.9997, 'description': 'Batchnorm decay.'},
-                   {'type': 'float', 'name': 'label_weights', 'value': 1.0, 'description': 'Batchnorm decay.'}]
+                    'description': 'Use q-sigmoid.'},
+                   {'type': 'multi_float', 'name': 'label_weights', 'value': None,
+                    'description': 'A list of label weights, each element '
+                                   'represents the weight for the label of its '
+                                   'index, for example, label_weights = [0.1, 0.5] '
+                                   'means the weight for label 0 is 0.1 and the '
+                                   'weight for label 1 is 0.5. If set as None, all '
+                                   'the labels have the same weight 1.0.'},
+                   {'type': 'float', 'name': 'batch_norm_decay', 'value': 0.9997, 'description': 'Batchnorm decay.'}
+                   ]

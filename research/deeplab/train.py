@@ -51,7 +51,11 @@ def handle_type(entry):
         flags.DEFINE_float(name, value, desc)
     if etype == "boolean":
         flags.DEFINE_boolean(name, value, desc)
+    if etype == "bool":
+        flags.DEFINE_bool(name, value, desc)
     if etype == "multi_integer":
+        flags.DEFINE_multi_integer(name, value, desc)
+    if etype == "multi_float":
         flags.DEFINE_multi_integer(name, value, desc)
     if etype == "string":
         flags.DEFINE_string(name, value, desc)
