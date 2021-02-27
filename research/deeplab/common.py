@@ -68,6 +68,8 @@ ORIGINAL_IMAGE = 'original_image'
 # Test set name.
 TEST_SET = 'test'
 
+cl = ConfigLoader(FLAGS=FLAGS)
+
 
 class ModelOptions(
     collections.namedtuple('ModelOptions', [
@@ -129,61 +131,61 @@ class ModelOptions(
           A new ModelOptions instance.
         """
         dense_prediction_cell_config = None
-        if FLAGS.dense_prediction_cell_json:
-            with tf.gfile.Open(FLAGS.dense_prediction_cell_json, 'r') as f:
+        if cl.dense_prediction_cell_json:
+            with tf.gfile.Open(cl.dense_prediction_cell_json, 'r') as f:
                 dense_prediction_cell_config = json.load(f)
         decoder_output_stride = None
-        if FLAGS.decoder_output_stride:
+        if cl.decoder_output_stride:
             decoder_output_stride = [
-                int(x) for x in FLAGS.decoder_output_stride]
+                int(x) for x in cl.decoder_output_stride]
             if sorted(decoder_output_stride, reverse=True) != decoder_output_stride:
                 raise ValueError('Decoder output stride need to be sorted in the '
                                  'descending order.')
         image_pooling_crop_size = None
-        if FLAGS.image_pooling_crop_size:
-            image_pooling_crop_size = [int(x) for x in FLAGS.image_pooling_crop_size]
+        if cl.image_pooling_crop_size:
+            image_pooling_crop_size = [int(x) for x in cl.image_pooling_crop_size]
         image_pooling_stride = [1, 1]
-        if FLAGS.image_pooling_stride:
-            image_pooling_stride = [int(x) for x in FLAGS.image_pooling_stride]
-        label_weights = FLAGS.label_weights
+        if cl.image_pooling_stride:
+            image_pooling_stride = [int(x) for x in cl.image_pooling_stride]
+        label_weights = cl.label_weights
         if label_weights is None:
             label_weights = 1.0
         nas_architecture_options = {
             'nas_stem_output_num_conv_filters': (
-                FLAGS.nas_stem_output_num_conv_filters),
-            'nas_use_classification_head': FLAGS.nas_use_classification_head,
-            'nas_remove_os32_stride': FLAGS.nas_remove_os32_stride,
+                cl.nas_stem_output_num_conv_filters),
+            'nas_use_classification_head': cl.nas_use_classification_head,
+            'nas_remove_os32_stride': cl.nas_remove_os32_stride,
         }
         return super(ModelOptions, cls).__new__(
             cls, outputs_to_num_classes, crop_size, atrous_rates, output_stride,
             preprocessed_images_dtype,
-            FLAGS.merge_method,
-            FLAGS.add_image_level_feature,
+            cl.merge_method,
+            cl.add_image_level_feature,
             image_pooling_crop_size,
             image_pooling_stride,
-            FLAGS.aspp_with_batch_norm,
-            FLAGS.aspp_with_separable_conv,
-            FLAGS.multi_grid,
+            cl.aspp_with_batch_norm,
+            cl.aspp_with_separable_conv,
+            cl.multi_grid,
             decoder_output_stride,
-            FLAGS.decoder_use_separable_conv,
-            FLAGS.logits_kernel_size,
-            FLAGS.model_variant,
-            FLAGS.depth_multiplier,
-            FLAGS.divisible_by,
-            FLAGS.prediction_with_upsampled_logits,
+            cl.decoder_use_separable_conv,
+            cl.logits_kernel_size,
+            cl.model_variant,
+            cl.depth_multiplier,
+            cl.divisible_by,
+            cl.prediction_with_upsampled_logits,
             dense_prediction_cell_config,
             nas_architecture_options,
-            FLAGS.use_bounded_activation,
-            FLAGS.aspp_with_concat_projection,
-            FLAGS.aspp_with_squeeze_and_excitation,
-            FLAGS.aspp_convs_filters,
-            FLAGS.decoder_use_sum_merge,
-            FLAGS.decoder_filters,
-            FLAGS.decoder_output_is_logits,
-            FLAGS.image_se_uses_qsigmoid,
+            cl.use_bounded_activation,
+            cl.aspp_with_concat_projection,
+            cl.aspp_with_squeeze_and_excitation,
+            cl.aspp_convs_filters,
+            cl.decoder_use_sum_merge,
+            cl.decoder_filters,
+            cl.decoder_output_is_logits,
+            cl.image_se_uses_qsigmoid,
             label_weights,
             'None',
-            FLAGS.batch_norm_decay)
+            cl.batch_norm_decay)
 
     def __deepcopy__(self, memo):
         return ModelOptions(copy.deepcopy(self.outputs_to_num_classes),
