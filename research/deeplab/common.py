@@ -107,7 +107,7 @@ class ModelOptions(
         'label_weights',
         'sync_batch_norm_method',
         'batch_norm_decay',
-    ]), ConfigLoader):
+    ])):
     """Immutable class to hold model options."""
 
     __slots__ = ()
