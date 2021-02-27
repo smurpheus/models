@@ -113,7 +113,7 @@ class ModelOptions(
     __slots__ = ()
 
     def __new__(cls,
-                outputs_to_num_classes,
+                outputs_to_num_classes=None,
                 crop_size=None,
                 atrous_rates=None,
                 output_stride=8,
