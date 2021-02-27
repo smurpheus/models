@@ -20,8 +20,8 @@ import collections
 import copy
 import json
 import tensorflow as tf
-import common_flags
-from configloader import ConfigLoader
+from deeplab import common_flags
+from deeplab.configloader import ConfigLoader
 
 flags = tf.app.flags
 FLAGS = flags.FLAGS
