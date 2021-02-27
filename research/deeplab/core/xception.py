@@ -55,7 +55,7 @@ from tensorflow.contrib import slim as contrib_slim
 
 from deeplab.core import utils
 from tensorflow.contrib.slim.nets import resnet_utils
-from nets.mobilenet import conv_blocks as mobilenet_v3_ops
+from slim.nets.mobilenet import conv_blocks as mobilenet_v3_ops
 
 slim = contrib_slim
 

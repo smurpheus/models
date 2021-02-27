@@ -26,7 +26,7 @@ import json
 import os
 
 import six
-import train_flags
+from deeplab import train_flags
 import tensorflow as tf
 from tensorflow.contrib import quantize as contrib_quantize
 from tensorflow.contrib import tfprof as contrib_tfprof
@@ -34,8 +34,8 @@ from deeplab import common
 from deeplab import model
 from deeplab.datasets import data_generator
 from deeplab.utils import train_utils
-from deployment import model_deploy
-from configloader import ConfigLoader
+from slim.deployment import model_deploy
+from deeplab.configloader import ConfigLoader
 
 slim = tf.contrib.slim
 flags = tf.app.flags

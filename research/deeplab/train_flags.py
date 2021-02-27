@@ -1,4 +1,5 @@
-default_configs = [{'type': 'integer', 'name': 'num_clones', 'value': 1, 'description': 'Number of clones to deploy.'},
+default_configs = [
+           {'type': 'integer', 'name': 'num_clones', 'value': 1, 'description': 'Number of clones to deploy.'},
            {'type': 'boolean', 'name': 'clone_on_cpu', 'value': False, 'description': 'Use CPUs to deploy clones.'},
            {'type': 'integer', 'name': 'num_replicas', 'value': 1, 'description': 'Number of worker replicas.'},
            {'type': 'integer', 'name': 'startup_delay_steps', 'value': 15,
@@ -90,6 +91,7 @@ default_configs = [{'type': 'integer', 'name': 'num_clones', 'value': 1, 'descri
             'description': 'Name of the segmentation dataset.'},
            {'type': 'string', 'name': 'train_split', 'value': 'train',
             'description': 'Which split of the dataset to be used for training'},
-           {'type': 'string', 'name': 'dataset_dir', 'value': None, 'description': 'Where the dataset reside.'}]
+           {'type': 'string', 'name': 'dataset_dir', 'value': None, 'description': 'Where the dataset reside.'},
+]
 configs = {entry['name']: entry['value'] for entry in default_configs}
 
