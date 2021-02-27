@@ -73,4 +73,5 @@ default_configs = [{'type': 'integer', 'name': 'min_resize_value', 'value': None
                                                                       'means the weight for label 0 is 0.1 and the '
                                                                       'weight for label 1 is 0.5. If set as None, all '
                                                                       'the labels have the same weight 1.0.'},
-                   {'type': 'float', 'name': 'batch_norm_decay', 'value': 0.9997, 'description': 'Batchnorm decay.'}]
+                   {'type': 'float', 'name': 'batch_norm_decay', 'value': 0.9997, 'description': 'Batchnorm decay.'},
+                   {'type': 'float', 'name': 'label_weights', 'value': 1.0, 'description': 'Batchnorm decay.'}]
