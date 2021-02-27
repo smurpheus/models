@@ -66,6 +66,7 @@ def handle_type(entry):
 for entry in train_flags.default_configs:
     handle_type(entry)
 
+print(FLAGS)
 
 class Trainer(ConfigLoader):
     FLAGS = FLAGS
@@ -310,7 +311,7 @@ class Trainer(ConfigLoader):
 
 def main(unused_argv):
     tf.logging.set_verbosity(tf.logging.INFO)
-    t = Trainer()
+    t = Trainer(FLAGS=FLAGS)
     t.do_training()
 
 

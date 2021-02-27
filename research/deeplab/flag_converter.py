@@ -1,7 +1,7 @@
 class FlagConverter(object):
     FLAGS = []
     def __init__(self):
-        self.config = []
+        self.config = self.FLAGS
     def DEFINE_float(self, name, value, description):
         self.config.append(dict(type="float", name=name, value=value, description=description))
     def DEFINE_boolean(self, name, value, description):
@@ -16,4 +16,7 @@ class FlagConverter(object):
         self.config.append(dict(type="list", name=name, value=value, description=description))
     def DEFINE_integer(self, name, value, description):
         self.config.append(dict(type="integer", name=name, value=value, description=description))
-
+    def DEFINE_multi_float(self, name, value, description):
+        self.config.append(dict(type="multi_float", name=name, value=value, description=description))
+    def DEFINE_bool(self, name, value, description):
+        self.config.append(dict(type="bool", name=name, value=value, description=description))
