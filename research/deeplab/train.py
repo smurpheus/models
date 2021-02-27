@@ -96,7 +96,7 @@ class Trainer(ConfigLoader):
         outputs_to_scales_to_logits = model.multi_scale_logits(
             samples[common.IMAGE],
             model_options=model_options,
-            image_pyramid=self.image_pyramid,
+            image_pyramid=common.cl.image_pyramid,
             weight_decay=self.weight_decay,
             is_training=True,
             fine_tune_batch_norm=self.fine_tune_batch_norm,
