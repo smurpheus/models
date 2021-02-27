@@ -64,6 +64,7 @@ from six.moves import range
 import tensorflow as tf
 
 FLAGS = tf.app.flags.FLAGS
+flags = tf.app.flags
 default_configs = [{'type': 'string', 'name': 'image_folder', 'value': './VOCdevkit/VOC2012/JPEGImages',
                     'description': 'Folder containing images.'},
                    {'type': 'string', 'name': 'semantic_segmentation_folder',
@@ -82,19 +83,21 @@ def handle_type(entry):
     value = entry['value']
     desc = entry['description']
     if etype == "float":
-        tf.app.flags.DEFINE_float(name, value, desc)
+        flags.DEFINE_float(name, value, desc)
     if etype == "boolean":
-        tf.app.flags.DEFINE_boolean(name, value, desc)
+        flags.DEFINE_boolean(name, value, desc)
+    if etype == "bool":
+        flags.DEFINE_bool(name, value, desc)
     if etype == "multi_integer":
-        tf.app.flags.DEFINE_multi_integer(name, value, desc)
+        flags.DEFINE_multi_integer(name, value, desc)
     if etype == "string":
-        tf.app.flags.DEFINE_string(name, value, desc)
+        flags.DEFINE_string(name, value, desc)
     if etype == "enum":
-        tf.app.flags.DEFINE_enum(name, value[0], value[1], desc)
+        flags.DEFINE_enum(name, value[0], value[1], desc)
     if etype == "list":
-        tf.app.flags.DEFINE_list(name, value, desc)
+        flags.DEFINE_list(name, value, desc)
     if etype == "integer":
-        tf.app.flags.DEFINE_integer(name, value, desc)
+        flags.DEFINE_integer(name, value, desc)
 
 
 for entry in default_configs:
